@@ -1,6 +1,5 @@
 package hu.poketerkep.shared.datasource;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hu.poketerkep.shared.geo.Coordinate;
 import hu.poketerkep.shared.model.helpers.CoordinateAware;
@@ -10,7 +9,6 @@ import redis.clients.jedis.GeoUnit;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
-import java.io.IOException;
 import java.util.HashSet;
 
 /**
@@ -107,7 +105,7 @@ abstract class CoordinateDataSource<T extends CoordinateAware> {
     private T convertFromJSON(String json) {
         try {
             return objectMapper.readValue(json, type);
-        } catch (IOException e) {
+        } catch (Exception e) {
             // There should be no problem with this
             throw new RuntimeException(e);
         }
@@ -121,8 +119,11 @@ abstract class CoordinateDataSource<T extends CoordinateAware> {
      */
     private String convertToJSON(T obj) {
         try {
+            if (!type.equals(obj.getClass())) {
+                throw new RuntimeException("cannot convert different types");
+            }
             return objectMapper.writeValueAsString(obj);
-        } catch (JsonProcessingException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

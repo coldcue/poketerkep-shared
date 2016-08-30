@@ -1,11 +1,12 @@
 package hu.poketerkep.shared.geo;
 
-import hu.poketerkep.shared.model.LocationConfig;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 
-public class Coordinate {
+public class Coordinate implements Serializable {
     private static final double R = 6378.1;
     private double latitude;
     private double longitude;
@@ -15,16 +16,15 @@ public class Coordinate {
         this.longitude = longitude;
     }
 
+    public Coordinate() {
+    }
+
     public static Coordinate fromDegrees(double latitudeDegrees, double longitudeDegrees) {
         return new Coordinate(latitudeDegrees, longitudeDegrees);
     }
 
     private static Coordinate fromRadians(double latitudeRadians, double longitudeRadians) {
         return new Coordinate(Math.toDegrees(latitudeRadians), Math.toDegrees(longitudeRadians));
-    }
-
-    public static Coordinate fromLocationConfig(LocationConfig locationConfig) {
-        return new Coordinate(locationConfig.getLatitude(), locationConfig.getLongitude());
     }
 
     /**
@@ -59,10 +59,12 @@ public class Coordinate {
     }
 
 
+    @JsonIgnore
     private double getLatitudeRadians() {
         return Math.toRadians(latitude);
     }
 
+    @JsonIgnore
     private double getLongitudeRadians() {
         return Math.toRadians(longitude);
     }

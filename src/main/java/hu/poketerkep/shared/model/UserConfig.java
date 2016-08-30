@@ -3,13 +3,12 @@ package hu.poketerkep.shared.model;
 
 import hu.poketerkep.shared.model.helpers.LastUsed;
 
-@SuppressWarnings("unused")
 public class UserConfig implements LastUsed {
     private String userName;
-    private Long lastUsed;
-    private Boolean banned;
+    private long lastUsed;
+    private boolean banned;
 
-    public UserConfig(String userName, Long lastUsed, Boolean banned) {
+    public UserConfig(String userName, long lastUsed, boolean banned) {
         this.userName = userName;
         this.lastUsed = lastUsed;
         this.banned = banned;
@@ -17,6 +16,7 @@ public class UserConfig implements LastUsed {
 
     public UserConfig() {
     }
+
 
     public String getUserName() {
         return userName;
@@ -26,19 +26,20 @@ public class UserConfig implements LastUsed {
         this.userName = userName;
     }
 
-    public Long getLastUsed() {
+    @Override
+    public long getLastUsed() {
         return lastUsed;
     }
 
-    public void setLastUsed(Long lastUsed) {
+    public void setLastUsed(long lastUsed) {
         this.lastUsed = lastUsed;
     }
 
-    public Boolean getBanned() {
+    public boolean isBanned() {
         return banned;
     }
 
-    public void setBanned(Boolean banned) {
+    public void setBanned(boolean banned) {
         this.banned = banned;
     }
 

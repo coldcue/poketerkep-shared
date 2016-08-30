@@ -1,5 +1,7 @@
 package hu.poketerkep.shared.model;
 
+import hu.poketerkep.shared.geo.Coordinate;
+
 import java.math.BigInteger;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -13,8 +15,11 @@ public class RandomPokemonGenerator {
 
         pokemon.setEncounterId(new BigInteger(30, random).toString(32));
         pokemon.setPokemonId(random.nextInt(720));
-        pokemon.setLatitude(47.0 + (double) random.nextInt(9999) / 10000);
-        pokemon.setLongitude(19.0 + (double) random.nextInt(9999) / 10000);
+
+        double latitude = 47.0 + (double) random.nextInt(9999) / 10000;
+        double longitude = 19.0 + (double) random.nextInt(9999) / 10000;
+
+        pokemon.setCoordinate(Coordinate.fromDegrees(latitude, longitude));
 
         long disappearTime = Instant.now().plusMillis(random.nextInt(15 * 60 * 1000)).toEpochMilli();
         pokemon.setDisappearTime(disappearTime);

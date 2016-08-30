@@ -9,5 +9,5 @@ public interface LastUsed {
      *
      * @return time in millis
      */
-    public Long getLastUsed();
+    long getLastUsed();
 }

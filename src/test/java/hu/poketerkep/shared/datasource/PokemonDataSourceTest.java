@@ -2,7 +2,7 @@ package hu.poketerkep.shared.datasource;
 
 import hu.poketerkep.shared.model.Pokemon;
 import hu.poketerkep.shared.model.RandomPokemonGenerator;
-import hu.poketerkep.shared.validator.PokemonValidationException;
+import hu.poketerkep.shared.validator.ValidationException;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -27,9 +27,9 @@ public class PokemonDataSourceTest {
         jedisPool = new JedisPool(new JedisPoolConfig(), "localhost");
 
         Jedis jedis = jedisPool.getResource();
-
         Assert.assertNotNull("Cannot connect to jedis", jedis);
-        pokemonDataSource = new PokemonDataSource(jedis);
+
+        pokemonDataSource = new PokemonDataSource(jedisPool);
     }
 
     private void clear() {
@@ -48,7 +48,7 @@ public class PokemonDataSourceTest {
         clear();
 
         Pokemon input = RandomPokemonGenerator.generate();
-        pokemonDataSource.addPokemon(input);
+        pokemonDataSource.add(input);
 
         HashSet<Pokemon> output = pokemonDataSource.getAll();
 
@@ -63,8 +63,8 @@ public class PokemonDataSourceTest {
         clear();
 
         Pokemon input = RandomPokemonGenerator.generate();
-        pokemonDataSource.addPokemon(input);
-        pokemonDataSource.removePokemon(input);
+        pokemonDataSource.add(input);
+        pokemonDataSource.remove(input);
 
         Assert.assertEquals(0, pokemonDataSource.getAll().size());
     }
@@ -77,13 +77,13 @@ public class PokemonDataSourceTest {
         // Add 10 pokemons
         Collection<Pokemon> input = RandomPokemonGenerator.generateN(10);
 
-        input.forEach(pokemon -> {
+        for (Pokemon pokemon : input) {
             try {
-                pokemonDataSource.addPokemon(pokemon);
-            } catch (PokemonValidationException e) {
+                pokemonDataSource.add(pokemon);
+            } catch (ValidationException e) {
                 e.printStackTrace();
             }
-        });
+        }
 
         HashSet<Pokemon> output = pokemonDataSource.getAll();
 

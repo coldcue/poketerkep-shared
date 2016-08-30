@@ -1,15 +1,20 @@
 package hu.poketerkep.shared.model;
 
+import hu.poketerkep.shared.geo.Coordinate;
+import hu.poketerkep.shared.model.helpers.CoordinateAware;
+
 import java.io.Serializable;
 
-@SuppressWarnings("unused")
-public class Pokemon implements Serializable {
+@SuppressWarnings("WeakerAccess")
+public class Pokemon implements CoordinateAware, Serializable {
     private String encounterId;
-    private Long disappearTime;
-    private Double latitude;
-    private Double longitude;
-    private Integer pokemonId;
+    private long disappearTime;
+    private int pokemonId;
     private String spawnpointId;
+    private Coordinate coordinate;
+
+    public Pokemon() {
+    }
 
     public String getEncounterId() {
         return encounterId;
@@ -19,35 +24,19 @@ public class Pokemon implements Serializable {
         this.encounterId = encounterId;
     }
 
-    public Long getDisappearTime() {
+    public long getDisappearTime() {
         return disappearTime;
     }
 
-    public void setDisappearTime(Long disappearTime) {
+    public void setDisappearTime(long disappearTime) {
         this.disappearTime = disappearTime;
     }
 
-    public Double getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(Double latitude) {
-        this.latitude = latitude;
-    }
-
-    public Double getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(Double longitude) {
-        this.longitude = longitude;
-    }
-
-    public Integer getPokemonId() {
+    public int getPokemonId() {
         return pokemonId;
     }
 
-    public void setPokemonId(Integer pokemonId) {
+    public void setPokemonId(int pokemonId) {
         this.pokemonId = pokemonId;
     }
 
@@ -60,7 +49,19 @@ public class Pokemon implements Serializable {
     }
 
     @Override
+    public Coordinate getCoordinate() {
+        return coordinate;
+    }
+
+    @Override
+    public void setCoordinate(Coordinate coordinate) {
+        this.coordinate = coordinate;
+    }
+
+    @Override
     public boolean equals(Object obj) {
         return Pokemon.class.equals(obj.getClass()) && encounterId.equals(((Pokemon) obj).encounterId);
     }
+
+
 }

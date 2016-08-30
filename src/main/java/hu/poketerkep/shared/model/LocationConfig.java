@@ -1,16 +1,15 @@
 package hu.poketerkep.shared.model;
 
 
+import hu.poketerkep.shared.geo.Coordinate;
+import hu.poketerkep.shared.model.helpers.CoordinateAware;
 import hu.poketerkep.shared.model.helpers.LastUsed;
 
-@SuppressWarnings("unused")
-public class LocationConfig implements LastUsed {
+public class LocationConfig implements LastUsed, CoordinateAware {
     private String locationId;
-    private Double latitude;
-    private Double longitude;
-    private Integer steps;
-    private Long lastUsed;
-
+    private Coordinate coordinate;
+    private int steps;
+    private long lastUsed;
 
     public String getLocationId() {
         return locationId;
@@ -20,35 +19,30 @@ public class LocationConfig implements LastUsed {
         this.locationId = locationId;
     }
 
-    public Double getLatitude() {
-        return latitude;
+    @Override
+    public Coordinate getCoordinate() {
+        return coordinate;
     }
 
-    public void setLatitude(Double latitude) {
-        this.latitude = latitude;
+    @Override
+    public void setCoordinate(Coordinate coordinate) {
+        this.coordinate = coordinate;
     }
 
-    public Double getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(Double longitude) {
-        this.longitude = longitude;
-    }
-
-    public Integer getSteps() {
+    public int getSteps() {
         return steps;
     }
 
-    public void setSteps(Integer steps) {
+    public void setSteps(int steps) {
         this.steps = steps;
     }
 
-    public Long getLastUsed() {
+    @Override
+    public long getLastUsed() {
         return lastUsed;
     }
 
-    public void setLastUsed(Long lastUsed) {
+    public void setLastUsed(long lastUsed) {
         this.lastUsed = lastUsed;
     }
 
@@ -56,10 +50,11 @@ public class LocationConfig implements LastUsed {
     public String toString() {
         return "LocationConfig{" +
                 "locationId='" + locationId + '\'' +
-                ", latitude=" + latitude +
-                ", longitude=" + longitude +
+                ", latitude=" + coordinate.getLatitude() +
+                ", longitude=" + coordinate.getLongitude() +
                 ", steps=" + steps +
                 ", lastUsed=" + lastUsed +
                 '}';
     }
+
 }

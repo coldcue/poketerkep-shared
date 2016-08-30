@@ -1,6 +1,8 @@
 package hu.poketerkep.shared.geo;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
 import java.text.DecimalFormat;
@@ -8,15 +10,13 @@ import java.text.DecimalFormatSymbols;
 
 public class Coordinate implements Serializable {
     private static final double R = 6378.1;
-    private double latitude;
-    private double longitude;
+    private final double latitude;
+    private final double longitude;
 
-    private Coordinate(double latitude, double longitude) {
+    @JsonCreator
+    private Coordinate(@JsonProperty("latitude") double latitude, @JsonProperty("longitude") double longitude) {
         this.latitude = latitude;
         this.longitude = longitude;
-    }
-
-    public Coordinate() {
     }
 
     public static Coordinate fromDegrees(double latitudeDegrees, double longitudeDegrees) {
@@ -54,7 +54,7 @@ public class Coordinate implements Serializable {
      * @param coordinate other coordinate
      * @return distance in km
      */
-    private double getDistance(Coordinate coordinate) {
+    public double getDistance(Coordinate coordinate) {
         return Haversine.calc(this.latitude, this.longitude, coordinate.latitude, coordinate.longitude);
     }
 
@@ -73,17 +73,11 @@ public class Coordinate implements Serializable {
         return latitude;
     }
 
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
-    }
 
     public double getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
-    }
 
     @Override
     public String toString() {

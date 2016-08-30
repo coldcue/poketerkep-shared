@@ -45,4 +45,9 @@ public class CoordinateTest {
         Assert.assertEquals("[47.0,19.0]", a.toString());
     }
 
+    @Test
+    public void haversineConstructor() throws Exception {
+        new Haversine();
+    }
+
 }

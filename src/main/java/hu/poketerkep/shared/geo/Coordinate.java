@@ -48,6 +48,16 @@ public class Coordinate {
         return Coordinate.fromRadians(newLatitude, newLongitude);
     }
 
+    /**
+     * Get the Distance between two coordinates
+     *
+     * @param coordinate other coordinate
+     * @return distance in km
+     */
+    private double getDistance(Coordinate coordinate) {
+        return Haversine.calc(this.latitude, this.longitude, coordinate.latitude, coordinate.longitude);
+    }
+
 
     private double getLatitudeRadians() {
         return Math.toRadians(latitude);

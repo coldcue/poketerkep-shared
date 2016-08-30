@@ -1,7 +1,9 @@
 package hu.poketerkep.shared.model;
 
+import java.io.Serializable;
+
 @SuppressWarnings("unused")
-public class Pokemon {
+public class Pokemon implements Serializable {
     private String encounterId;
     private Long disappearTime;
     private Double latitude;
@@ -55,5 +57,10 @@ public class Pokemon {
 
     public void setSpawnpointId(String spawnpointId) {
         this.spawnpointId = spawnpointId;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return Pokemon.class.equals(obj.getClass()) && encounterId.equals(((Pokemon) obj).encounterId);
     }
 }

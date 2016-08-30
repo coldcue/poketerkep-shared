@@ -2,16 +2,14 @@ package hu.poketerkep.shared.datasource;
 
 import hu.poketerkep.shared.geo.Coordinate;
 import hu.poketerkep.shared.model.Pokemon;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Random;
 
 import static hu.poketerkep.shared.model.RandomPokemonGenerator.*;
 
@@ -138,6 +136,55 @@ public class PokemonDataSourceTest {
 
             Assert.assertTrue("A pokemon is not found in the radius", found);
         }
+
+    }
+
+    @Ignore
+    public void getWithinRadiusPerformanceTest() throws Exception {
+        clear();
+        HashSet<Long> times = new HashSet<>();
+        Random random = new Random();
+
+        pokemonDataSource.addAll(generateN(100000));
+
+        for (int i = 0; i < 10000; i++) {
+            Coordinate coordinate = Coordinate.fromDegrees(47, 19);
+            long start = System.currentTimeMillis();
+            pokemonDataSource.getWithinRadius(coordinate, random.nextInt(1000) / 100); // 0.01 - 10 km
+            long end = System.nanoTime();
+
+            long time = end - start;
+            times.add(time);
+        }
+
+        double min = times.stream().mapToLong(Long::new).min().getAsLong() / 1000000;
+        double avg = times.stream().mapToLong(Long::new).average().getAsDouble() / 1000000;
+        double max = times.stream().mapToLong(Long::new).max().getAsLong() / 1000000;
+
+        System.out.println("GetWithinRadiusTimes times - max:" + max + " avg:" + avg + " min:" + min);
+
+    }
+
+    @Ignore
+    public void addPerformanceTest() throws Exception {
+        clear();
+        HashSet<Long> times = new HashSet<>();
+
+        for (int i = 0; i < 1000; i++) {
+            Pokemon pokemon = generate();
+            long start = System.nanoTime();
+            pokemonDataSource.add(pokemon);
+            long end = System.nanoTime();
+
+            long time = end - start;
+            times.add(time);
+        }
+
+        double min = times.stream().mapToLong(Long::new).min().getAsLong() / 1000000;
+        double avg = times.stream().mapToLong(Long::new).average().getAsDouble() / 1000000;
+        double max = times.stream().mapToLong(Long::new).max().getAsLong() / 1000000;
+
+        System.out.println("Add times - max:" + max + " avg:" + avg + " min:" + min);
 
     }
 

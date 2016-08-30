@@ -29,8 +29,8 @@ public class RandomPokemonGenerator {
     }
 
     public static Pokemon generate() {
-        double latitude = 47.0 + (double) random.nextInt(9999) / 10000;
-        double longitude = 19.0 + (double) random.nextInt(9999) / 10000;
+        double latitude = 47.0 + (double) random.nextInt(1000000) / 1000000;
+        double longitude = 19.0 + (double) random.nextInt(1000000) / 1000000;
 
         return generateWithCoordinates(Coordinate.fromDegrees(latitude, longitude));
     }

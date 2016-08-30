@@ -4,11 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import hu.poketerkep.shared.geo.Coordinate;
 import hu.poketerkep.shared.model.helpers.CoordinateAware;
 import hu.poketerkep.shared.validator.ValidationException;
-import redis.clients.jedis.GeoRadiusResponse;
-import redis.clients.jedis.GeoUnit;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.*;
 
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 
 /**
@@ -81,6 +80,24 @@ abstract class CoordinateDataSource<T extends CoordinateAware> {
         String json = convertToJSON(obj);
         Jedis jedis = jedisPool.getResource();
         jedis.geoadd(KEY_NAME, obj.getLongitude(), obj.getLatitude(), json);
+        jedis.close();
+    }
+
+    /**
+     * Add all T to the database
+     *
+     * @param objs T objects
+     * @throws ValidationException
+     */
+    public void addAll(Collection<T> objs) throws ValidationException {
+        HashMap<String, GeoCoordinate> memberCoordinateMap = new HashMap<>();
+
+        for (T obj : objs) {
+            memberCoordinateMap.put(convertToJSON(obj), new GeoCoordinate(obj.getLongitude(), obj.getLatitude()));
+        }
+
+        Jedis jedis = jedisPool.getResource();
+        jedis.geoadd(KEY_NAME, memberCoordinateMap);
         jedis.close();
     }
 

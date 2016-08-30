@@ -9,17 +9,16 @@ import java.util.Collection;
 import java.util.Random;
 
 public class RandomPokemonGenerator {
-    public static Pokemon generate() {
-        Random random = new Random();
+
+    private static Random random = new Random();
+
+    public static Pokemon generateWithCoordinates(Coordinate coordinate) {
         Pokemon pokemon = new Pokemon();
 
-        pokemon.setEncounterId(new BigInteger(30, random).toString(32));
+        pokemon.setEncounterId(new BigInteger(120, random).toString(32));
         pokemon.setPokemonId(random.nextInt(720));
 
-        double latitude = 47.0 + (double) random.nextInt(9999) / 10000;
-        double longitude = 19.0 + (double) random.nextInt(9999) / 10000;
-
-        pokemon.setCoordinate(Coordinate.fromDegrees(latitude, longitude));
+        pokemon.setCoordinate(coordinate);
 
         long disappearTime = Instant.now().plusMillis(random.nextInt(15 * 60 * 1000)).toEpochMilli();
         pokemon.setDisappearTime(disappearTime);
@@ -27,6 +26,13 @@ public class RandomPokemonGenerator {
         pokemon.setSpawnpointId("notgenerated");
 
         return pokemon;
+    }
+
+    public static Pokemon generate() {
+        double latitude = 47.0 + (double) random.nextInt(9999) / 10000;
+        double longitude = 19.0 + (double) random.nextInt(9999) / 10000;
+
+        return generateWithCoordinates(Coordinate.fromDegrees(latitude, longitude));
     }
 
     public static Collection<Pokemon> generateN(int n) {

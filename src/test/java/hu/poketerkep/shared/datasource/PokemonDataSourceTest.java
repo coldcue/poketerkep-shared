@@ -1,8 +1,7 @@
 package hu.poketerkep.shared.datasource;
 
+import hu.poketerkep.shared.geo.Coordinate;
 import hu.poketerkep.shared.model.Pokemon;
-import hu.poketerkep.shared.model.RandomPokemonGenerator;
-import hu.poketerkep.shared.validator.ValidationException;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -13,6 +12,8 @@ import redis.clients.jedis.JedisPoolConfig;
 
 import java.util.Collection;
 import java.util.HashSet;
+
+import static hu.poketerkep.shared.model.RandomPokemonGenerator.*;
 
 /**
  * Tests the Pokemon data source with a running redis instance
@@ -47,7 +48,7 @@ public class PokemonDataSourceTest {
         // Clear redis
         clear();
 
-        Pokemon input = RandomPokemonGenerator.generate();
+        Pokemon input = generate();
         pokemonDataSource.add(input);
 
         HashSet<Pokemon> output = pokemonDataSource.getAll();
@@ -62,7 +63,7 @@ public class PokemonDataSourceTest {
         // Clear redis
         clear();
 
-        Pokemon input = RandomPokemonGenerator.generate();
+        Pokemon input = generate();
         pokemonDataSource.add(input);
         pokemonDataSource.remove(input);
 
@@ -70,20 +71,13 @@ public class PokemonDataSourceTest {
     }
 
     @Test
-    public void getAll() throws Exception {
+    public void addAllAndGetAll() throws Exception {
         // Clear redis
         clear();
 
         // Add 10 pokemons
-        Collection<Pokemon> input = RandomPokemonGenerator.generateN(10);
-
-        for (Pokemon pokemon : input) {
-            try {
-                pokemonDataSource.add(pokemon);
-            } catch (ValidationException e) {
-                e.printStackTrace();
-            }
-        }
+        Collection<Pokemon> input = generateN(10);
+        pokemonDataSource.addAll(input);
 
         HashSet<Pokemon> output = pokemonDataSource.getAll();
 
@@ -104,6 +98,46 @@ public class PokemonDataSourceTest {
 
     @Test
     public void getWithinRadius() throws Exception {
+        // Clear redis
+        clear();
+
+        Coordinate origo = Coordinate.fromDegrees(47.43, 19.02);
+
+        Collection<Pokemon> inRadius = new HashSet<>();
+
+        inRadius.add(generateWithCoordinates(origo.getNew(0.02, 30)));
+        inRadius.add(generateWithCoordinates(origo.getNew(0.03, 60)));
+        inRadius.add(generateWithCoordinates(origo.getNew(0.04, 90)));
+        inRadius.add(generateWithCoordinates(origo.getNew(0.05, 120)));
+        inRadius.add(generateWithCoordinates(origo.getNew(0.06, 240)));
+
+        pokemonDataSource.addAll(inRadius);
+
+        Collection<Pokemon> outOfRadius = new HashSet<>();
+
+        outOfRadius.add(generateWithCoordinates(origo.getNew(0.12, 30)));
+        outOfRadius.add(generateWithCoordinates(origo.getNew(0.13, 60)));
+        outOfRadius.add(generateWithCoordinates(origo.getNew(0.14, 90)));
+        outOfRadius.add(generateWithCoordinates(origo.getNew(0.15, 120)));
+        outOfRadius.add(generateWithCoordinates(origo.getNew(0.16, 240)));
+
+        pokemonDataSource.addAll(outOfRadius);
+
+        HashSet<Pokemon> withinRadius = pokemonDataSource.getWithinRadius(origo, 0.07);
+
+        Assert.assertEquals("Sizes does not match", inRadius.size(), withinRadius.size());
+
+        for (Pokemon obj1 : withinRadius) {
+
+            boolean found = false;
+            for (Pokemon obj2 : inRadius) {
+                if (obj1.equals(obj2)) {
+                    found = true;
+                }
+            }
+
+            Assert.assertTrue("A pokemon is not found in the radius", found);
+        }
 
     }
 

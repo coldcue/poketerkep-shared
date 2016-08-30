@@ -1,9 +1,11 @@
 package hu.poketerkep.shared.datasource;
 
 import hu.poketerkep.shared.model.Pokemon;
-import hu.poketerkep.shared.validator.pokemon.PokemonValidator;
 import hu.poketerkep.shared.validator.ValidationException;
+import hu.poketerkep.shared.validator.pokemon.PokemonValidator;
 import redis.clients.jedis.JedisPool;
+
+import java.util.Collection;
 
 @SuppressWarnings("WeakerAccess")
 public class PokemonDataSource extends CoordinateDataSource<Pokemon> {
@@ -14,10 +16,20 @@ public class PokemonDataSource extends CoordinateDataSource<Pokemon> {
     }
 
     @Override
-    public void add(Pokemon obj) throws ValidationException {
+    public void add(Pokemon pokemon) throws ValidationException {
         //Validate
-        PokemonValidator.validatePokemon(obj);
+        PokemonValidator.validatePokemon(pokemon);
 
-        super.add(obj);
+        super.add(pokemon);
+    }
+
+    @Override
+    public void addAll(Collection<Pokemon> pokemons) throws ValidationException {
+        //Validate all pokemons
+        for (Pokemon pokemon : pokemons) {
+            PokemonValidator.validatePokemon(pokemon);
+        }
+
+        super.addAll(pokemons);
     }
 }

@@ -11,14 +11,6 @@ repositories {
     mavenCentral()
 }
 
-sourceSets {
-    test {
-        java {
-            srcDirs = ["test/java"]
-        }
-    }
-}
-
 dependencies {
     compile 'com.amazonaws:aws-java-sdk:1.11.20'
     compile 'redis.clients:jedis:2.9.0'

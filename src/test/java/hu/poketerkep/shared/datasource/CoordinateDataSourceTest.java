@@ -1,7 +1,7 @@
 package hu.poketerkep.shared.datasource;
 
 
-import hu.poketerkep.shared.model.LocationConfig;
+import hu.poketerkep.shared.geo.Coordinate;
 import hu.poketerkep.shared.model.Pokemon;
 import hu.poketerkep.shared.model.helpers.CoordinateAware;
 import org.junit.Test;
@@ -28,7 +28,7 @@ public class CoordinateDataSourceTest {
         method.setAccessible(true);
 
         //Try to convert an other CoordinateAware class
-        Object invoke = method.invoke(new EmptyCoordinateDataSource(), new LocationConfig());
+        Object invoke = method.invoke(new EmptyCoordinateDataSource(), new EmptyCoordinateAware());
         System.out.println(invoke);
     }
 
@@ -36,6 +36,19 @@ public class CoordinateDataSourceTest {
     private class EmptyCoordinateDataSource extends CoordinateDataSource<Pokemon> {
         EmptyCoordinateDataSource() {
             super(Pokemon.class, "asd", null);
+        }
+    }
+
+    private class EmptyCoordinateAware implements CoordinateAware {
+
+        @Override
+        public Coordinate getCoordinate() {
+            return null;
+        }
+
+        @Override
+        public void setCoordinate(Coordinate coordinate) {
+
         }
     }
 

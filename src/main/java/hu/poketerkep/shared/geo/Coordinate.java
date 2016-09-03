@@ -78,7 +78,6 @@ public class Coordinate implements Serializable {
         return longitude;
     }
 
-
     @Override
     public String toString() {
         DecimalFormat decimalFormat = new DecimalFormat("0.0########", DecimalFormatSymbols.getInstance());

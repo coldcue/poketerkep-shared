@@ -54,6 +54,7 @@ public class Coordinate implements Serializable {
      * @param coordinate other coordinate
      * @return distance in km
      */
+    @JsonIgnore
     public double getDistance(Coordinate coordinate) {
         return Haversine.calc(this.latitude, this.longitude, coordinate.latitude, coordinate.longitude);
     }

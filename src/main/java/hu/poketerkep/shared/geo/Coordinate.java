@@ -3,6 +3,7 @@ package hu.poketerkep.shared.geo;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.math.DoubleMath;
 
 import java.io.Serializable;
 import java.text.DecimalFormat;
@@ -14,7 +15,7 @@ public class Coordinate implements Serializable {
     private final double longitude;
 
     @JsonCreator
-    private Coordinate(@JsonProperty("latitude") double latitude, @JsonProperty("longitude") double longitude) {
+    protected Coordinate(@JsonProperty("latitude") double latitude, @JsonProperty("longitude") double longitude) {
         this.latitude = latitude;
         this.longitude = longitude;
     }
@@ -77,6 +78,18 @@ public class Coordinate implements Serializable {
 
     public double getLongitude() {
         return longitude;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Coordinate that = (Coordinate) o;
+
+        double tolerance = 0.0000001;
+        return DoubleMath.fuzzyEquals(latitude, that.latitude, tolerance)
+                && DoubleMath.fuzzyEquals(longitude, that.longitude, tolerance);
     }
 
     @Override

@@ -11,9 +11,24 @@ repositories {
     mavenCentral()
 }
 
+task testJar(type: Jar, dependsOn: testClasses) {
+    baseName = "test-${project.archivesBaseName}"
+    from sourceSets.test.output
+}
+
+configurations {
+    tests
+}
+
+artifacts {
+    tests testJar
+}
+
 dependencies {
     compile 'com.amazonaws:aws-java-sdk:1.11.20'
     compile 'redis.clients:jedis:2.9.0'
     compile 'org.codehaus.jackson:jackson-mapper-asl:1.9.13'
+    compile 'com.google.guava:guava:19.0'
+
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }

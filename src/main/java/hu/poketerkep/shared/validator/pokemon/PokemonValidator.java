@@ -24,11 +24,5 @@ public class PokemonValidator {
         if (pokemon.getDisappearTime() > nowPlus15Min) {
             throw new PokemonValidationException("disappearTime.wrong");
         }
-
-
-        // -- spawnpointId
-        if (pokemon.getSpawnpointId() == null || pokemon.getSpawnpointId().length() == 0) {
-            throw new PokemonValidationException("spawnpointId.empty");
-        }
     }
 }

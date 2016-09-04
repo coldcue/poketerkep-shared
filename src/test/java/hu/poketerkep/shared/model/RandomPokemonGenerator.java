@@ -23,8 +23,6 @@ public class RandomPokemonGenerator {
         long disappearTime = Instant.now().plusMillis(random.nextInt(15 * 60 * 1000)).toEpochMilli();
         pokemon.setDisappearTime(disappearTime);
 
-        pokemon.setSpawnpointId("notgenerated");
-
         return pokemon;
     }
 

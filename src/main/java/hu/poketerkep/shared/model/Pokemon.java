@@ -10,7 +10,6 @@ public class Pokemon implements CoordinateAware, Serializable {
     private String encounterId;
     private long disappearTime;
     private int pokemonId;
-    private String spawnpointId;
     private Coordinate coordinate;
 
     public Pokemon() {
@@ -38,14 +37,6 @@ public class Pokemon implements CoordinateAware, Serializable {
 
     public void setPokemonId(int pokemonId) {
         this.pokemonId = pokemonId;
-    }
-
-    public String getSpawnpointId() {
-        return spawnpointId;
-    }
-
-    public void setSpawnpointId(String spawnpointId) {
-        this.spawnpointId = spawnpointId;
     }
 
     @Override

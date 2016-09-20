@@ -16,14 +16,12 @@ import java.util.HashSet;
 abstract class CoordinateDataSource<T extends CoordinateAware> {
     private final String KEY_NAME;
     private final JedisPool jedisPool;
-    private final ObjectMapper objectMapper;
     private final Class<T> type;
 
     CoordinateDataSource(Class<T> type, String key_name, JedisPool jedisPool) {
         this.KEY_NAME = key_name;
         this.jedisPool = jedisPool;
         this.type = type;
-        this.objectMapper = new ObjectMapper();
     }
 
     /**
@@ -32,18 +30,16 @@ abstract class CoordinateDataSource<T extends CoordinateAware> {
      * @return all pokemons
      */
     public HashSet<T> getAll() {
-        HashSet<T> result = new HashSet<>();
+        try (Jedis jedis = jedisPool.getResource()) {
+            HashSet<T> result = new HashSet<>();
 
-        Jedis jedis = jedisPool.getResource();
+            // http://stackoverflow.com/questions/11504154/get-all-members-in-sorted-set
+            jedis.zrange(KEY_NAME, 0, -1).stream()
+                    .map(this::convertFromJSON)
+                    .forEach(result::add);
 
-        // http://stackoverflow.com/questions/11504154/get-all-members-in-sorted-set
-        jedis.zrange(KEY_NAME, 0, -1).stream()
-                .map(this::convertFromJSON)
-                .forEach(result::add);
-
-        jedis.close();
-
-        return result;
+            return result;
+        }
     }
 
     /**
@@ -55,19 +51,15 @@ abstract class CoordinateDataSource<T extends CoordinateAware> {
      * @return the pokemons in the given radius
      */
     public HashSet<T> getWithinRadius(Coordinate coordinate, double radius) {
-        HashSet<T> result = new HashSet<>();
+        try (Jedis jedis = jedisPool.getResource()) {
+            HashSet<T> result = new HashSet<>();
 
-        Jedis jedis = jedisPool.getResource();
-
-        // http://stackoverflow.com/questions/11504154/get-all-members-in-sorted-set
-        jedis.georadius(KEY_NAME, coordinate.getLongitude(), coordinate.getLatitude(), radius, GeoUnit.KM).stream()
-                .map(GeoRadiusResponse::getMemberByString)
-                .map(this::convertFromJSON)
-                .forEach(result::add);
-
-        jedis.close();
-
-        return result;
+            jedis.georadius(KEY_NAME, coordinate.getLongitude(), coordinate.getLatitude(), radius, GeoUnit.KM).stream()
+                    .map(GeoRadiusResponse::getMemberByString)
+                    .map(this::convertFromJSON)
+                    .forEach(result::add);
+            return result;
+        }
     }
 
 
@@ -78,9 +70,9 @@ abstract class CoordinateDataSource<T extends CoordinateAware> {
      */
     public void add(T obj) throws ValidationException {
         String json = convertToJSON(obj);
-        Jedis jedis = jedisPool.getResource();
-        jedis.geoadd(KEY_NAME, obj.getLongitude(), obj.getLatitude(), json);
-        jedis.close();
+        try (Jedis jedis = jedisPool.getResource()) {
+            jedis.geoadd(KEY_NAME, obj.getLongitude(), obj.getLatitude(), json);
+        }
     }
 
     /**
@@ -96,9 +88,9 @@ abstract class CoordinateDataSource<T extends CoordinateAware> {
             memberCoordinateMap.put(convertToJSON(obj), new GeoCoordinate(obj.getLongitude(), obj.getLatitude()));
         }
 
-        Jedis jedis = jedisPool.getResource();
-        jedis.geoadd(KEY_NAME, memberCoordinateMap);
-        jedis.close();
+        try (Jedis jedis = jedisPool.getResource()) {
+            jedis.geoadd(KEY_NAME, memberCoordinateMap);
+        }
     }
 
     /**
@@ -108,9 +100,9 @@ abstract class CoordinateDataSource<T extends CoordinateAware> {
      */
     public void remove(T obj) {
         String json = convertToJSON(obj);
-        Jedis jedis = jedisPool.getResource();
-        jedis.zrem(KEY_NAME, json);
-        jedis.close();
+        try (Jedis jedis = jedisPool.getResource()) {
+            jedis.zrem(KEY_NAME, json);
+        }
     }
 
     /**
@@ -121,7 +113,7 @@ abstract class CoordinateDataSource<T extends CoordinateAware> {
      */
     private T convertFromJSON(String json) {
         try {
-            return objectMapper.readValue(json, type);
+            return new ObjectMapper().readValue(json, type);
         } catch (Exception e) {
             // There should be no problem with this
             throw new RuntimeException(e);
@@ -139,7 +131,7 @@ abstract class CoordinateDataSource<T extends CoordinateAware> {
             if (!type.equals(obj.getClass())) {
                 throw new RuntimeException("cannot convert different types");
             }
-            return objectMapper.writeValueAsString(obj);
+            return new ObjectMapper().writeValueAsString(obj);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

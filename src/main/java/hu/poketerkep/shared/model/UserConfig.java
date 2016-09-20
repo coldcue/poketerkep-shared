@@ -3,7 +3,10 @@ package hu.poketerkep.shared.model;
 
 import hu.poketerkep.shared.model.helpers.LastUsed;
 
+import java.util.Comparator;
+
 public class UserConfig implements LastUsed {
+    public static final Comparator<UserConfig> LAST_USED_COMPARATOR = (o1, o2) -> Long.compare(o1.lastUsed, o2.lastUsed);
     private String userName;
     private long lastUsed;
     private boolean banned;

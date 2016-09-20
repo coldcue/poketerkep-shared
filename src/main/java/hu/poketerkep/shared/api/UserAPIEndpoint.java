@@ -4,7 +4,7 @@ import hu.poketerkep.shared.model.UserConfig;
 import org.springframework.http.ResponseEntity;
 
 public interface UserAPIEndpoint {
-    ResponseEntity<UserConfig> nextUser();
+    ResponseEntity<UserConfig[]> nextUser(int limit);
 
     ResponseEntity<UserConfig> banUser(UserConfig userConfig);
 

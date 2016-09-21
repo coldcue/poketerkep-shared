@@ -17,11 +17,13 @@ abstract class CoordinateDataSource<T extends CoordinateAware> {
     private final String KEY_NAME;
     private final JedisPool jedisPool;
     private final Class<T> type;
+    private final ObjectMapper objectMapper;
 
     CoordinateDataSource(Class<T> type, String key_name, JedisPool jedisPool) {
         this.KEY_NAME = key_name;
         this.jedisPool = jedisPool;
         this.type = type;
+        objectMapper = new ObjectMapper();
     }
 
     /**
@@ -113,7 +115,7 @@ abstract class CoordinateDataSource<T extends CoordinateAware> {
      */
     private T convertFromJSON(String json) {
         try {
-            return new ObjectMapper().readValue(json, type);
+            return objectMapper.readValue(json, type);
         } catch (Exception e) {
             // There should be no problem with this
             throw new RuntimeException(e);
@@ -131,7 +133,7 @@ abstract class CoordinateDataSource<T extends CoordinateAware> {
             if (!type.equals(obj.getClass())) {
                 throw new RuntimeException("cannot convert different types");
             }
-            return new ObjectMapper().writeValueAsString(obj);
+            return objectMapper.writeValueAsString(obj);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
